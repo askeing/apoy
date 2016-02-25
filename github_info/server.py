@@ -25,7 +25,10 @@ def load_settings():
                 raise Exception('No "client_secret" in settings file {}'.format(settings_file))
             return settings
     else:
-        raise Exception('No settings file {}'.format(settings_file))
+        raise Exception('No settings file {}\n'
+                        'Please open your Github OAuth application page for getting "client_id" and "client_secret".\n'
+                        'And then modify the "Authorization callback URL" to your server callback URL.'
+                        .format(settings_file))
 
 
 _SETTINGS = load_settings()
