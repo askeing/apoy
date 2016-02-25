@@ -151,6 +151,22 @@ class TestHandler(BaseHandler):
         self.render(_STATIC_HTML + 'test.html', user=user, name=name, email=email, location=location)
 
 
+class TaskHandler(BaseHandler):
+    def get(self, taskid):
+        self.get_task_info(taskid)
+
+    def get_task_info(self, taskid):
+        if not self.current_user:
+            self.redirect(_HOME_PAGE)
+            return
+
+        # TODO: not implemented
+        self.write('Hi {}!'
+                   '<br/>'
+                   'The taskid is {}.'
+                   .format(self.get_current_user(), taskid))
+
+
 class RepoInfoHandler(BaseHandler):
     def get(self):
         self.get_repo_info()
@@ -200,6 +216,7 @@ def make_app():
         # (r'/stop', StopHandler),
         (r'/test', TestHandler),
         (r'/rest/repoinfo', RepoInfoHandler),
+        (r'/rest/task/([0-9]+)', TaskHandler),
     ], **settings)
 
 
