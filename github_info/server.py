@@ -105,6 +105,8 @@ class CallBackHandler(BaseHandler):
         # get user login
         gh = GithubInfo(token_obj['access_token'])
         user_login = gh.get_user().get_login()
+
+        # User login
         self.set_secure_cookie('user', user_login)
 
         # if has state, redirect to that page
@@ -132,40 +134,27 @@ class TestHandler(BaseHandler):
         self.render(_STATIC_HTML + 'test.html', user=user, name=name, email=email, location=location)
 
 
-class RestHandler(BaseHandler):
-    def get(self, service):
-        if not self.current_user:
-            self.redirect('/')
-            return
-        self.handle_service(service)
+class RepoInfoHandler(BaseHandler):
+    def get(self):
+        self.get_repo_info()
 
-    def post(self, service):
-        if not self.current_user:
-            self.redirect('/')
-            return
-        self.handle_service(service)
-
-    def handle_service(self, service):
-        if 'repoinfo' == service:
-            self.get_repo_info()
+    def post(self):
+        self.get_repo_info()
 
     def get_repo_info(self):
+        # if not login, redirect to home page
+        if not self.current_user:
+            self.redirect('/')
+            return
+
         data = {k: self.get_argument(k) for k in self.request.arguments}
         if self.check_repoinfo(data):
             repo_url = data.get('repoUrl')
             repo_fullname = urlparse.urlparse(repo_url).path[1:]
 
-            result = {}
             # get cookie for storing access token
             gh = GithubInfo(self.get_secure_cookie('github_token'))
-            repo = gh.get_repo_info(repo_fullname)
-            result['name'] = repo.get_name()
-            result['full_name'] = repo.get_full_name()
-            result['owner.login'] = repo.get_owner().get_login()
-            result['languages'] = repo.get_languages()
-            result['description'] = repo.get_description()
-            result['file_structure'] = repo.get_file_structure()
-
+            result = gh.get_repo_info_summary(repo_fullname)
             self.write(json_encode(result))
         else:
             raise tornado.web.HTTPError(400)
@@ -193,7 +182,7 @@ def make_app():
         (r'/cb', CallBackHandler),
         # (r'/stop', StopHandler),
         (r'/test', TestHandler),
-        (r'/rest/(.*)', RestHandler),
+        (r'/rest/repoinfo', RepoInfoHandler),
     ], **settings)
 
 

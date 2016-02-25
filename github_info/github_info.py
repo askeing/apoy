@@ -79,3 +79,14 @@ class GithubInfo:
 
     def get_repo_info(self, full_name_or_id):
         return GithubRepoInfo(self.g.get_repo(full_name_or_id))
+
+    def get_repo_info_summary(self, full_name_or_id):
+        repo = self.get_repo_info(full_name_or_id)
+        result = {'name': repo.get_name(),
+                  'full_name': repo.get_full_name(),
+                  'owner.login': repo.get_owner().get_login(),
+                  'languages': repo.get_languages(),
+                  'description': repo.get_description(),
+                  'file_structure': repo.get_file_structure()
+                  }
+        return result
