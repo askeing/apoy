@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import urllib
 import urlparse
 
@@ -9,6 +10,7 @@ from tornado.escape import json_encode
 from tornado.httpclient import HTTPClient
 
 from github_info import GithubInfo
+from task_worker import TaskWorker
 
 
 _STATIC_HTML = 'static/'
@@ -32,7 +34,8 @@ def load_settings():
 
 
 _SETTINGS = load_settings()
-_RESULT_PAGE = 'result'
+_HOME_PAGE = '/'
+_RESULT_PAGE = '/result'
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -42,15 +45,15 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class MainHandler(BaseHandler):
     def get(self):
+        self.clear_cookie('repoUrl')
         self.render(_STATIC_HTML + 'main.html', title='Apoy')
 
 
-# TODO: will be removed after finish all work
-class StopHandler(BaseHandler):
-    def get(self):
-        print('Stopping tornado...')
-        tornado.ioloop.IOLoop.instance().stop()
-        print('Tornado stopped.')
+#class StopHandler(BaseHandler):
+#    def get(self):
+#        print('Stopping tornado...')
+#        tornado.ioloop.IOLoop.instance().stop()
+#        print('Tornado stopped.')
 
 
 class LoginHandler(BaseHandler):
@@ -58,7 +61,9 @@ class LoginHandler(BaseHandler):
         data = {k: self.get_argument(k) for k in self.request.arguments}
         state = _RESULT_PAGE
         if 'state' in data:
-            state = data['state']
+            state = data.get('state')
+        if 'repoUrl' in data:
+            self.set_secure_cookie('repoUrl', data.get('repoUrl'))
         # redirect to Github OAuth page
         oauth_url = 'https://github.com/login/oauth/authorize'
         parameters = {
@@ -75,7 +80,8 @@ class LogoutHandler(BaseHandler):
     def get(self):
         self.clear_cookie('user')
         self.clear_cookie('github_token')
-        self.redirect('/')
+        self.clear_cookie('repoUrl')
+        self.redirect(_HOME_PAGE)
         return
 
 
@@ -110,15 +116,29 @@ class CallBackHandler(BaseHandler):
         # User login
         self.set_secure_cookie('user', user_login)
 
-        # if has state, redirect to that page
+        # if no repoUrl attribute, back to home page
+        repo_url = self.get_secure_cookie('repoUrl')
+        repo_fullname = urlparse.urlparse(repo_url).path[1:]
+        if not repo_fullname:
+            self.redirect(_HOME_PAGE)
+
+        # Create New Task for generating test cases
+        taskid = int(time.time())
+        gh = GithubInfo(self.get_secure_cookie('github_token'))
+        project_repo_summary = gh.get_repo_info_summary(repo_fullname)
+        TaskWorker(project_repo_summary, taskid).start()
+
+        # if has state, redirect to that page with taskid
         if state:
-            self.redirect(state)
+            parameters = {'taskid': taskid}
+            url = '{}?{}'.format(state, urllib.urlencode(parameters))
+            self.redirect(url)
 
 
 class TestHandler(BaseHandler):
     def get(self):
         if not self.current_user:
-            self.redirect('/')
+            self.redirect(_HOME_PAGE)
             return
 
         # get cookie for storing access token
@@ -141,7 +161,7 @@ class RepoInfoHandler(BaseHandler):
     def get_repo_info(self):
         # if not login, redirect to home page
         if not self.current_user:
-            self.redirect('/')
+            self.redirect(_HOME_PAGE)
             return
 
         data = {k: self.get_argument(k) for k in self.request.arguments}

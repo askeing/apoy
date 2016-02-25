@@ -47,11 +47,26 @@
 
         <p>This is a template for a simple Apoy entry website. You can create the test cases for your projects.</p>
 
-        <p>
+        <form id="repoForm" role="form" action="/login">
+            <div class="form-group">
+                <label class="control-label" for="repoUrl">Repository URL</label>
+                <input type="url" class="form-control" id="repoUrl" name="repoUrl"
+                       placeholder="Please input repository URL"
+                       required autofocus>
+
+                <p class="help-block">ex: https://github.com/askeing/github-info</p>
+            </div>
+            <button type="submit" class="btn btn-social btn-lg btn-github">
+                <span class="fa fa-github"></span>
+                Sign in with Github
+            </button>
+        </form>
+            <!--
             <a class="btn btn-social btn-lg btn-github" onclick="login();">
                 <span class="fa fa-github"></span>
                 Sign in with Github
             </a>
+            -->
     </div>
 </div>
 
