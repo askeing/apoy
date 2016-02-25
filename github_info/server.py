@@ -32,6 +32,7 @@ def load_settings():
 
 
 _SETTINGS = load_settings()
+_RESULT_PAGE = 'result'
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -55,7 +56,7 @@ class StopHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self):
         data = {k: self.get_argument(k) for k in self.request.arguments}
-        state = ''
+        state = _RESULT_PAGE
         if 'state' in data:
             state = data['state']
         # redirect to Github OAuth page
@@ -117,11 +118,7 @@ class CallBackHandler(BaseHandler):
 class TestHandler(BaseHandler):
     def get(self):
         if not self.current_user:
-            parameters = {
-                'state': '/test'
-            }
-            body = urllib.urlencode(parameters)
-            self.redirect('/login?' + body)
+            self.redirect('/')
             return
 
         # get cookie for storing access token
