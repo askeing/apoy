@@ -223,7 +223,7 @@ def make_app():
 def main():
     app = make_app()
     app.listen(8888)
-    print('Start tornado...')
+    print('Start tornado at http://127.0.0.1:8888 ...')
     tornado.ioloop.IOLoop.instance().start()
 
 
