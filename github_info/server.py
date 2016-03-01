@@ -224,6 +224,7 @@ def main():
     app = make_app()
     app.listen(8888)
     print('Start tornado...')
+    print('Please open your ngrok url instead of localhost')
     tornado.ioloop.IOLoop.instance().start()
 
 
