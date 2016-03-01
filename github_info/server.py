@@ -118,9 +118,9 @@ class CallBackHandler(BaseHandler):
 
         # if no repoUrl attribute, back to home page
         repo_url = self.get_secure_cookie('repoUrl')
-        repo_fullname = urlparse.urlparse(repo_url).path[1:]
-        if not repo_fullname:
+        if not repo_url:
             self.redirect(_HOME_PAGE)
+        repo_fullname = urlparse.urlparse(repo_url).path[1:]
 
         # Create New Task for generating test cases
         taskid = int(time.time())
