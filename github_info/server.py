@@ -59,7 +59,10 @@ class MainHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self):
         data = {k: self.get_argument(k) for k in self.request.arguments}
+        import pdb
+        pdb.set_trace()
         state = _RESULT_PAGE
+        print(data)
         if 'state' in data:
             state = data.get('state')
         if 'repoUrl' in data:
@@ -223,7 +226,8 @@ def make_app():
 def main():
     app = make_app()
     app.listen(8888)
-    print('Start tornado at http://127.0.0.1:8888 ...')
+    print('Start tornado...')
+    print('Please open your ngrok url instead of localhost')
     tornado.ioloop.IOLoop.instance().start()
 
 
