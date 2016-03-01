@@ -59,10 +59,7 @@ class MainHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self):
         data = {k: self.get_argument(k) for k in self.request.arguments}
-        import pdb
-        pdb.set_trace()
         state = _RESULT_PAGE
-        print(data)
         if 'state' in data:
             state = data.get('state')
         if 'repoUrl' in data:
