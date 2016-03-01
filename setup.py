@@ -27,14 +27,14 @@ long_description = readme + '\n\n' + history
 
 if __name__ == '__main__':
     setup(
-        name='github-info',
+        name='apoy',
         version=VERSION,
-        description='Get the Github repo\'s information',
+        description='create the test cases for your projects',
         long_description=long_description,
-        keywords='github api ',
+        keywords='github api apoy test case',
         author='Askeing Yen',
         author_email='askeing@gmail.com',
-        url='https://github.com/askeing/github-info',
+        url='https://github.com/askeing/apoy',
         packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
         package_data={},
         install_requires=install_requires,
@@ -42,6 +42,6 @@ if __name__ == '__main__':
         entry_points="""
         # -*- Entry points: -*-
         [console_scripts]
-        github_info = github_info.server:main
+        apoy = apoy.server:main
         """,
     )
