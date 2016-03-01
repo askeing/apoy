@@ -33,7 +33,7 @@ var Table = React.createClass({
       }
       return (
         <tr key={testcase.index}>
-          <td> <button onClick={function(){this.props.removeItem(testcase.index)}.bind(this)}>[x]</button></td>
+          <td> <button className="btn btn-default" onClick={function(){this.props.removeItem(testcase.index)}.bind(this)}><span className="glyphicon glyphicon-ban-circle"></span></button></td>
           <td> {testcase.id}       </td>
           {body}
           <td> {testcase.priority} </td>
@@ -42,13 +42,16 @@ var Table = React.createClass({
     }.bind(this));
 
     return (
-      <table>
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th> Disable   </th>
+            <th> ID        </th>
+            <th> Test Case </th>
+            <th> Priority</th>
+          </tr>
+        </thead>
         <tbody>
-        <tr>
-          <th> ID        </th>
-          <th> Test Case </th>
-          <th> Priority</th>
-        </tr>
         {testcasesElems}
         </tbody>
       </table>
@@ -113,14 +116,24 @@ var Result = React.createClass({
   render: function() {
     var shownTestcases = this.filterTestcaseByTotalTime(this.state.testcases, this.state.totalTime);
     return (
-      <div>
-        <p> You can use the slider to custmize the desired execution time.</p>
-        <input type="range" min="30" max="120" step="30" defaultValue="60" 
-               onChange={function(evt){this.setState({totalTime: evt.target.value})}.bind(this)}/>
-        <label>Estimated Time: {this.state.totalTime} min</label>
-        <br />
-        <a download="mozapoy_test_suite.csv" href={this.generateCsvUrl(shownTestcases)} >Download as Excel CSV</a>
-        <Table testcases={shownTestcases} removeItem={this.removeItem}/>
+      <div className="container">
+        <div className="row">
+          <h1>MozApoy Test Cases</h1>
+        </div>
+        <div className="row well">
+          <div className="col-xs-6">
+            <p> You can use the slider to custmize the desired execution time.</p>
+            <input type="range" min="30" max="120" step="30" defaultValue="60" 
+                   onChange={function(evt){this.setState({totalTime: evt.target.value})}.bind(this)}/>
+            <label>Estimated Time: {this.state.totalTime} min</label>
+          </div>
+          <div className="col-xs-6">
+            <a className="btn btn-success" download="mozapoy_test_suite.csv" href={this.generateCsvUrl(shownTestcases)} >Download as Excel CSV</a>
+          </div>
+        </div>
+        <div className="row">
+          <Table testcases={shownTestcases} removeItem={this.removeItem}/>
+        </div>
       </div>
     )
   }
