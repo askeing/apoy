@@ -1,5 +1,6 @@
 import pprint
 from threading import Thread
+from rule_analysis.rule_analysis import run_analysis
 
 
 class TaskWorker(Thread):
@@ -13,3 +14,4 @@ class TaskWorker(Thread):
         print('TaskID: {}'.format(self.taskid))
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(self.project_repo_summary)
+        pp.pprint(run_analysis(self.project_repo_summary))
