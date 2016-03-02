@@ -1,12 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html>
+  <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>MozApoy</title>
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Font-Awesome -->
@@ -30,47 +27,16 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+  </head>
 
-    <script>
-        function login() {
-            window.location.href = './login';
-        }
-    </script>
-</head>
+  <body>
+    <div id="container"/>
+    <script src="static/build/react.js"></script>
+    <script src="static/build/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
 
-<body>
-
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-    <div class="container">
-        <h1>Apoy</h1>
-
-        <p>This is a template for a simple Apoy entry website. You can create the test cases for your projects.</p>
-
-        <form id="repoForm" role="form" action="/login">
-            <div class="form-group">
-                <label class="control-label" for="repoUrl">Repository URL</label>
-                <input type="url" class="form-control" id="repoUrl" name="repoUrl"
-                       placeholder="Please input repository URL"
-                       required autofocus>
-
-                <p class="help-block">ex: https://github.com/askeing/github-info</p>
-            </div>
-            <button type="submit" class="btn btn-social btn-lg btn-github">
-                <span class="fa fa-github"></span>
-                Sign in with Github
-            </button>
-        </form>
-            <!--
-            <a class="btn btn-social btn-lg btn-github" onclick="login();">
-                <span class="fa fa-github"></span>
-                Sign in with Github
-            </a>
-            -->
-    </div>
-</div>
-
-</body>
+    <script type="text/babel" src="static/js/form.js"></script>
+    <script type="text/babel" src="static/js/result.js"></script>
+    <script type="text/babel" src="static/js/index.js"></script>
+  </body>
 </html>
-
-

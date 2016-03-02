@@ -135,6 +135,14 @@ class CallBackHandler(BaseHandler):
             self.redirect(url)
 
 
+class ResultHandler(BaseHandler):
+    def get(self):
+        if not self.current_user:
+            self.redirect(_HOME_PAGE)
+            return
+
+        self.render(_STATIC_HTML + 'result.html')
+
 class TestHandler(BaseHandler):
     def get(self):
         if not self.current_user:
@@ -213,6 +221,7 @@ def make_app():
         (r'/login', LoginHandler),
         (r'/logout', LogoutHandler),
         (r'/cb', CallBackHandler),
+        (r'/result', ResultHandler),
         # (r'/stop', StopHandler),
         (r'/test', TestHandler),
         (r'/rest/repoinfo', RepoInfoHandler),
