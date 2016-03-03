@@ -55,7 +55,12 @@
                        placeholder="Please input repository URL"
                        required autofocus>
                 <p class="help-block">ex: https://github.com/askeing/apoy</p>
-                <div class="" id="error_msg"></div>
+
+                <div id="error" class="alert alert-danger hidden" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    <span id="error_msg"></span>
+                </div>
             </div>
             <button type="submit" class="btn btn-social btn-lg btn-github">
                 <span class="fa fa-github"></span>

@@ -2,6 +2,7 @@ import os
 import shutil
 import logging
 from github import Github
+from github import UnknownObjectException
 
 
 logger = logging.getLogger(__name__)
@@ -89,6 +90,10 @@ class GithubInfo:
 
     def get_repo_info_summary(self, full_name_or_id):
         repo = self.get_repo_info(full_name_or_id)
+        # if there is no repo name, should raise exception due to there is no repo.
+        if not repo.get_name():
+            raise UnknownObjectException(200, '{} doesn\'t exist.'.format(full_name_or_id))
+
         result = {'name': repo.get_name(),
                   'full_name': repo.get_full_name(),
                   'owner.login': repo.get_owner().get_login(),
