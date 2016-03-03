@@ -1,5 +1,7 @@
 .idea
 apoy/settings.json
+snapshot
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
