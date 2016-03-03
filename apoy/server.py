@@ -2,6 +2,7 @@ import os
 import json
 import time
 import urllib
+import logging
 import urlparse
 
 import tornado.ioloop
@@ -11,6 +12,11 @@ from tornado.httpclient import HTTPClient
 
 from github_info import GithubInfo
 from task_worker import TaskWorker
+
+
+logging.getLogger('apoy.github_info').setLevel(logging.INFO)
+logging.getLogger('apoy.task_worker').setLevel(logging.INFO)
+logging.getLogger('apoy.rule_analysis').setLevel(logging.INFO)
 
 
 _STATIC_HTML = 'static/'
@@ -47,13 +53,6 @@ class MainHandler(BaseHandler):
     def get(self):
         self.clear_cookie('repoUrl')
         self.render(_STATIC_HTML + 'main.html', title='Apoy')
-
-
-#class StopHandler(BaseHandler):
-#    def get(self):
-#        print('Stopping tornado...')
-#        tornado.ioloop.IOLoop.instance().stop()
-#        print('Tornado stopped.')
 
 
 class LoginHandler(BaseHandler):
@@ -125,7 +124,7 @@ class CallBackHandler(BaseHandler):
         # Create New Task for generating test cases
         taskid = int(time.time())
         gh = GithubInfo(self.get_secure_cookie('github_token'))
-        project_repo_summary = gh.get_repo_info_summary(repo_fullname)
+        project_repo_summary = gh.get_repo_info_summary_with_snapshot(repo_fullname)
         TaskWorker(project_repo_summary, taskid).start()
 
         # if has state, redirect to that page with taskid
@@ -142,6 +141,7 @@ class ResultHandler(BaseHandler):
             return
 
         self.render(_STATIC_HTML + 'result.html')
+
 
 class TestHandler(BaseHandler):
     def get(self):
@@ -169,9 +169,9 @@ class TaskHandler(BaseHandler):
             return
 
         # TODO: not implemented
-        self.write('Hi {}!'
+        self.write('Hi {0}!'
                    '<br/>'
-                   'The taskid is {}.'
+                   'The taskid is {1}.'
                    .format(self.get_current_user(), taskid))
 
 
@@ -200,7 +200,8 @@ class RepoInfoHandler(BaseHandler):
         else:
             raise tornado.web.HTTPError(400)
 
-    def check_repoinfo(self, data):
+    @staticmethod
+    def check_repoinfo(data):
         if 'repoUrl' in data:
             return True
         return False
@@ -222,7 +223,6 @@ def make_app():
         (r'/logout', LogoutHandler),
         (r'/cb', CallBackHandler),
         (r'/result', ResultHandler),
-        # (r'/stop', StopHandler),
         (r'/test', TestHandler),
         (r'/rest/repoinfo', RepoInfoHandler),
         (r'/rest/task/([0-9]+)', TaskHandler),
