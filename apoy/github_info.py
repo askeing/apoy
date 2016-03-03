@@ -1,4 +1,10 @@
+import os
+import shutil
+import logging
 from github import Github
+
+
+logger = logging.getLogger(__name__)
 
 
 class GithubUserInfo:
@@ -73,6 +79,7 @@ class GithubInfo:
 
         self.g = Github(login_or_token=login_or_token, password=password)
         self.user = GithubUserInfo(self.g.get_user())
+        self.snapshot = GithubSnapshot()
 
     def get_user(self):
         return self.user
@@ -90,3 +97,34 @@ class GithubInfo:
                   'file_structure': repo.get_file_structure()
                   }
         return result
+
+    def get_repo_info_summary_with_snapshot(self, full_name_or_id):
+        result = self.get_repo_info_summary(full_name_or_id)
+        repo_path = self.snapshot.dump_repo_snapshot(full_name_or_id)
+        result['repo_path'] = repo_path
+        return result
+
+
+class GithubSnapshot:
+    def __init__(self):
+        self.snapshot_dir = os.path.abspath(os.path.join('.', 'snapshot'))
+        if os.path.exists(self.snapshot_dir) and os.path.isdir(self.snapshot_dir):
+            logger.info('The snapshot root folder already exists.')
+        else:
+            os.mkdir(self.snapshot_dir)
+            logger.info('Create snapshot root folder: {}'.format(self.snapshot_dir))
+
+    def dump_repo_snapshot(self, full_name_or_id):
+        path = os.path.join(self.snapshot_dir, os.path.basename(full_name_or_id))
+        if os.path.exists(path):
+            logger.error("Creating snapshot failed for {0}. Path already exists.".format(full_name_or_id))
+            return None
+        git_repo = "https://github.com/{0}.git".format(full_name_or_id)
+        os.system("cd {0}; git clone --depth=1 {1}".format(self.snapshot_dir, git_repo))
+        logger.info('Create snapshot folder: {}'.format(path))
+        return path
+
+    def cleanup_repo_snapshot(self, full_name_or_id):
+        path = os.path.join(self.snapshot_dir, os.path.basename(full_name_or_id))
+        shutil.rmtree(path, ignore_errors=True)
+        logger.info('Remove snapshot folder: {}'.format(path))
