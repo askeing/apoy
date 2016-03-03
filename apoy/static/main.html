@@ -31,6 +31,7 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <script type="application/javascript" src="static/js/main.js"></script>
     <script>
         function login() {
             window.location.href = './login';
@@ -53,20 +54,14 @@
                 <input type="url" class="form-control" id="repoUrl" name="repoUrl"
                        placeholder="Please input repository URL"
                        required autofocus>
-
-                <p class="help-block">ex: https://github.com/askeing/github-info</p>
+                <p class="help-block">ex: https://github.com/askeing/apoy</p>
+                <div class="" id="error_msg"></div>
             </div>
             <button type="submit" class="btn btn-social btn-lg btn-github">
                 <span class="fa fa-github"></span>
                 Sign in with Github
             </button>
         </form>
-            <!--
-            <a class="btn btn-social btn-lg btn-github" onclick="login();">
-                <span class="fa fa-github"></span>
-                Sign in with Github
-            </a>
-            -->
     </div>
 </div>
 

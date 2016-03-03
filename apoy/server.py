@@ -1,3 +1,4 @@
+from github import UnknownObjectException
 import os
 import json
 import time
@@ -14,6 +15,10 @@ from github_info import GithubInfo
 from task_worker import TaskWorker
 
 
+logger = logging.getLogger(__name__)
+
+
+logging.getLogger('apoy.server').setLevel(logging.INFO)
 logging.getLogger('apoy.github_info').setLevel(logging.INFO)
 logging.getLogger('apoy.task_worker').setLevel(logging.INFO)
 logging.getLogger('apoy.rule_analysis').setLevel(logging.INFO)
@@ -124,8 +129,16 @@ class CallBackHandler(BaseHandler):
         # Create New Task for generating test cases
         taskid = int(time.time())
         gh = GithubInfo(self.get_secure_cookie('github_token'))
-        project_repo_summary = gh.get_repo_info_summary_with_snapshot(repo_fullname)
-        TaskWorker(project_repo_summary, taskid).start()
+        try:
+            project_repo_summary = gh.get_repo_info_summary_with_snapshot(repo_fullname)
+            TaskWorker(project_repo_summary, taskid).start()
+        except UnknownObjectException as e:
+            logger.error(e)
+            error_msg = 'Get error from {0} repo: {1}'.format(repo_fullname, e.data)
+            error = {'error_msg': error_msg}
+            url = '{}?{}'.format(_HOME_PAGE, urllib.urlencode(error))
+            self.redirect(url)
+            return
 
         # if has state, redirect to that page with taskid
         if state:
