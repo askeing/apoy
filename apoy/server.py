@@ -1,4 +1,3 @@
-from github import UnknownObjectException
 import os
 import json
 import time
@@ -10,6 +9,7 @@ import tornado.ioloop
 import tornado.web
 from tornado.escape import json_encode
 from tornado.httpclient import HTTPClient
+from github import UnknownObjectException
 
 from github_info import GithubInfo
 from task_worker import TaskWorker

@@ -20,7 +20,7 @@ function login() {
 window.onload = function () {
     var error_msg = $.QueryString["error_msg"];
     if (error_msg) {
-        $("#error_msg").addClass('text-danger');
-        $("#error_msg").text("Error: " + error_msg);
+        $("#error").removeClass("hidden");
+        $("#error_msg").text(error_msg);
     }
-}
+};
