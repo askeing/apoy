@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+import shutil
 
 
 def find(path, target):
@@ -34,19 +35,17 @@ rule_handlers = {'login': login_handler,
                  'forgot_password': forgot_password_handler,
                  }
 
+def cleanup(input_path):
+    shutil.rmtree(input_path)
 
 def run_analysis(repo_summary):
-    # rule_handlers = {key: predefined_handlers[key] for key in attributes}
-    #repo_path = dump_repo_snapshot(repo_summary['full_name'])
-    #summary = repo_summary.copy()
-    #summary['repo_path'] = repo_path
-    #enabled_attributes = {k: True for k, v in rule_handlers.items()
-    #                      if v(summary)}
-    #cleanup(repo_path)
-    # FIXME: remove this print
-    #print("enabled attributes: ")
-    #return enabled_attributes
-    pass
+    repo_path = repo_summary['repo_path']
+    print repo_path
+    enabled_attributes = {k: True for k, v in rule_handlers.items()
+                          if v(repo_summary)}
+    cleanup(repo_path)
+    print("enabled attributes: ")
+    return enabled_attributes
 
 
 def main():

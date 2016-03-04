@@ -16,10 +16,14 @@ KEYWORD_STEP_VARIABLE = "<step_variable>"
 class DccCompiler(object):
     refernce_data = {}
     compiled_data = {}
+    reference_dir_path = ""
+    input_file_path = ""
+    output_file_path = ""
 
-    def __init__(self):
-        self.read_arguments()
-        self.import_reference_files()
+    def __init__(self, input_fp, output_fp, reference_dp="./apoy/dcc/references"):
+        self.output_file_path = output_fp
+        self.input_file_path = input_fp
+        self.reference_dir_path = reference_dp
 
     def read_arguments(self):
         self.arg_parser = argparse.ArgumentParser(description='Dynamic Case Composition Compiler',
@@ -77,16 +81,18 @@ class DccCompiler(object):
         return result_list
 
     def run_compile(self):
-        for input_data_fn in os.listdir(self.input_dir_path):
-            input_data_fp = os.path.join(self.input_dir_path, input_data_fn)
-            feature_name = input_data_fn.split(".")[0]
-            self.compiled_data[feature_name] = self.compile(input_data_fp)
+        feature_name = self.input_file_path.split(".")[0]
+        self.compiled_data[feature_name] = self.compile(self.input_file_path)
 
     def output_compiled_data(self):
+        dir_name = os.path.dirname(self.output_file_path)
+        if os.path.exists(dir_name) is False:
+            os.mkdir(dir_name)
         with open(self.output_file_path, "wb") as write_fh:
             json.dump(self.compiled_data, write_fh)
 
     def run(self):
+        self.import_reference_files()
         self.run_compile()
         self.output_compiled_data()
 
