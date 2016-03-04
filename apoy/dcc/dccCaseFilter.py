@@ -1,4 +1,5 @@
 __author__ = 'shako'
+import os
 import json
 
 DEFAULT_ATTRIBUTES = ["basic", "security"]
@@ -31,6 +32,9 @@ class DccCaseLibGenerator(object):
         return return_result
 
     def output_to_csv(self, input_contents):
+        dir_name = os.path.dirname(self.csv_fp)
+        if os.path.exists(dir_name) is False:
+            os.mkdir(dir_name)
         with open(self.csv_fp, "wb") as write_fh:
             write_fh.writelines(input_contents)
 

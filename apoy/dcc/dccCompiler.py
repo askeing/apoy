@@ -85,6 +85,9 @@ class DccCompiler(object):
         self.compiled_data[feature_name] = self.compile(self.input_file_path)
 
     def output_compiled_data(self):
+        dir_name = os.path.dirname(self.output_file_path)
+        if os.path.exists(dir_name) is False:
+            os.mkdir(dir_name)
         with open(self.output_file_path, "wb") as write_fh:
             json.dump(self.compiled_data, write_fh)
 
