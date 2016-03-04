@@ -23,20 +23,41 @@ var mockTestCaseData = [
 
 var Table = React.createClass({
   render: function() {
-    var testcasesElems = this.props.testcases.map(function(testcase){
+    var testcasesElems = this.props.testcases.map(function(testcase, index){
       var body;
+      //var text = "";
+      var text = testcase.map(function(step){
+        var expected;
+        if (step.expected) {
+          expected = (<p> >>> {step.expected}</p>)
+        }
+        return (
+          <div>
+            <p>{step.step}</p>
+            {expected}
+          </div>
+        )
+      })
+      /*
+      testcase[stepidx].step + "\n>>>" + testcase[stepidx].expected + "\n"
+      for (var stepidx in testcase){
+        text += testcase[stepidx].step + "\n>>>" + testcase[stepidx].expected + "\n"
+      }
+      console.log(text)
+      */
+      //FIXME: fake priority:
       if (testcase.disabled){
-        body = (<td><strike> {testcase.text} </strike></td>)
+        body = (<td><strike> {text} </strike></td>)
       }
       else{
-        body = (<td> {testcase.text} </td>)
+        body = (<td> {text} </td>)
       }
       return (
         <tr key={testcase.index}>
           <td> <button className="btn btn-default" onClick={function(){this.props.removeItem(testcase.index)}.bind(this)}><span className="glyphicon glyphicon-ban-circle"></span></button></td>
-          <td> {testcase.id}       </td>
+          <td> {index/*testcase.id*/}       </td>
           {body}
-          <td> {testcase.priority} </td>
+          <td> {/*testcase.priority*/} </td>
         </tr>
       )
     }.bind(this));
@@ -63,7 +84,7 @@ var Result = React.createClass({
   getInitialState: function(){
     return {
       totalTime: 60,
-      testcases: []
+      testcases: [[{'step': 'loading...'}]]
     }
   },
   componentDidMount: function(){
@@ -72,12 +93,45 @@ var Result = React.createClass({
 
   loadTestcases: function(){
     //TODO:ajax
+    if (typeof(fetch) == undefined){
+      alert('We are using the latest Fetch API, you need to update your browser or wait for us to implement a backward compatiable version')
+    }
+
+    var a = new RegExp("taskid=([0-9]+)");
+    var taskid = decodeURIComponent(a.exec(window.location.search)[1]);
+    //TODO: check for invalid id
+
+    var timer = setInterval(function(){
+      fetch('/rest/task/' + taskid).then(function(resp){
+        console.log(this)
+        if (resp.status !== 200) {
+          console.log('failed, ' + resp.status)
+          return
+        }
+        resp.json().then(function(data){
+          console.log(this)
+          if (data.status == "done"){
+            clearInterval(timer);
+          }
+          console.log("Got " + data.results)
+          var testcases = data.results.map(function(testcase, index){
+            testcase['index'] = index
+            return testcase
+          })
+          console.log(this)
+          this.setState({testcases: testcases})
+        }.bind(this))
+      }.bind(this))
+    }.bind(this), 3000);
+
+    /*
     var testcases = mockTestCaseData;
     testcases = testcases.map(function(testcase, index){
       testcase['index'] = index
       return testcase
     })
     this.setState({testcases: testcases})
+    */
 
   },
 
@@ -89,8 +143,12 @@ var Result = React.createClass({
   },
 
   filterTestcaseByTotalTime: function(testcases, totalTime){
+    /*
     var priority = totalTime / 30; //TODO: improve the algo
     return testcases.filter(function(tc){return tc.priority <= priority});
+    */
+    //FIXME: a workaround before we have priority in the generated result
+    return testcases
   },
 
   generateCsvUrl: function(testcases) {
