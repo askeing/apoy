@@ -8,7 +8,7 @@ class DccCaseLibGenerator(object):
 
     case_lib_content = {}
 
-    def __init__(self, input_attribute_list, output_csv_fp, input_case_lib_fp="./apoy/dcc/output/cases.json"):
+    def __init__(self, input_attribute_list, output_csv_fp, input_case_lib_fp="dcc/output/cases.json"):
         self.case_lib_fp = input_case_lib_fp
         self.csv_fp = output_csv_fp
         self.attribute_list = input_attribute_list
