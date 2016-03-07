@@ -112,14 +112,19 @@ var Result = React.createClass({
           console.log(this)
           if (data.status == "done"){
             clearInterval(timer);
+            var keys = Object.keys(data.results);
+            console.log(keys)
+            if (keys.length !== 1){
+              alert('Bad formatted test cases, please contact the site administrator for this issue.')
+            }
+            
+            var testcases = data.results[keys[0]].map(function(testcase, index){
+              testcase['index'] = index
+              return testcase
+            })
+            this.setState({testcases: testcases})
           }
-          console.log("Got " + data.results)
-          var testcases = data.results.map(function(testcase, index){
-            testcase['index'] = index
-            return testcase
-          })
-          console.log(this)
-          this.setState({testcases: testcases})
+          console.log("Still in progress")
         }.bind(this))
       }.bind(this))
     }.bind(this), 3000);

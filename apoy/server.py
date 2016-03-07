@@ -177,6 +177,7 @@ class TaskHandler(BaseHandler):
         self.get_task_info(taskid)
 
     def get_task_info(self, taskid):
+        logger = logging.getLogger('apoy.server')
         # Using xhr will not have current user
         #if not self.current_user:
             #self.redirect(_HOME_PAGE)
@@ -192,14 +193,25 @@ class TaskHandler(BaseHandler):
                     'results': json.load(f)
                 }
 
-        except:
+        except IOError:
+            logger.warning('results/{}.json is not ready'.format(taskid))
+            logger.debug(os.system('ls results'))
             result = {
                 'user': self.get_current_user(),
                 'id': taskid,
                 'status': 'in progress',
                 'results': []
             }
-
+        except:
+            logger.error('Unexpected Error while loading results/{}.json'.format(taskid))
+            import sys
+            logger.error(sys.exc_info()[0])
+            result = {
+                'user': self.get_current_user(),
+                'id': taskid,
+                'status': 'server error',
+                'results': []
+            }
         self.write(json.dumps(result))
         #self.write('Hi {}!'
                    #'<br/>'
