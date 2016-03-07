@@ -177,15 +177,34 @@ class TaskHandler(BaseHandler):
         self.get_task_info(taskid)
 
     def get_task_info(self, taskid):
-        if not self.current_user:
-            self.redirect(_HOME_PAGE)
-            return
+        # Using xhr will not have current user
+        #if not self.current_user:
+            #self.redirect(_HOME_PAGE)
+            #return
 
-        # TODO: not implemented
-        self.write('Hi {0}!'
-                   '<br/>'
-                   'The taskid is {1}.'
-                   .format(self.get_current_user(), taskid))
+        try:
+            with open('results/{}.json'.format(taskid), 'r') as f:
+                result = {
+                    'user': self.get_current_user(),
+                    'id': taskid,
+                    #'status': 'in progress',
+                    'status': 'done',
+                    'results': json.load(f)
+                }
+
+        except:
+            result = {
+                'user': self.get_current_user(),
+                'id': taskid,
+                'status': 'in progress',
+                'results': []
+            }
+
+        self.write(json.dumps(result))
+        #self.write('Hi {}!'
+                   #'<br/>'
+                   #'The taskid is {}.'
+                   #.format(self.get_current_user(), taskid))
 
 
 class RepoInfoHandler(BaseHandler):
