@@ -178,16 +178,11 @@ class TaskHandler(BaseHandler):
 
     def get_task_info(self, taskid):
         # Using xhr will not have current user
-        #if not self.current_user:
-            #self.redirect(_HOME_PAGE)
-            #return
-
         try:
             with open('results/{}.json'.format(taskid), 'r') as f:
                 result = {
                     'user': self.get_current_user(),
                     'id': taskid,
-                    #'status': 'in progress',
                     'status': 'done',
                     'results': json.load(f)
                 }
@@ -201,11 +196,6 @@ class TaskHandler(BaseHandler):
             }
 
         self.write(json.dumps(result))
-        #self.write('Hi {}!'
-                   #'<br/>'
-                   #'The taskid is {}.'
-                   #.format(self.get_current_user(), taskid))
-
 
 class RepoInfoHandler(BaseHandler):
     def get(self):
