@@ -20,7 +20,7 @@ class DccCompiler(object):
     input_file_path = ""
     output_file_path = ""
 
-    def __init__(self, input_fp, output_fp, reference_dp="./apoy/dcc/references"):
+    def __init__(self, input_fp, output_fp, reference_dp="dcc/references"):
         self.output_file_path = output_fp
         self.input_file_path = input_fp
         self.reference_dir_path = reference_dp

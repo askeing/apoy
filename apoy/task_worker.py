@@ -20,10 +20,10 @@ class TaskWorker(Thread):
         attribute_list = run_analysis(self.project_repo_summary)
         pp.pprint(attribute_list)
 
-        case_csv_fp = os.path.join(os.getcwd(), "apoy", "dcc", "tmp", str(self.taskid) + ".csv")
+        case_csv_fp = os.path.join(os.getcwd(), "dcc", "tmp", str(self.taskid) + ".csv")
         obj_case_filter = DccCaseLibGenerator(attribute_list, case_csv_fp)
         obj_case_filter.run()
-        case_json_fp = os.path.join(os.getcwd(), "apoy", "results", str(self.taskid) + ".json")
+        case_json_fp = os.path.join(os.getcwd(), "results", str(self.taskid) + ".json")
         obj_dcc_compiler = DccCompiler(case_csv_fp, case_json_fp)
         obj_dcc_compiler.run()
 
