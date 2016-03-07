@@ -63,6 +63,7 @@ class DccReferenceGenerator(object):
                 action = value_array[2].strip().lower()
                 step_variable_list = value_array[3].strip().lower().split("|")
                 expected = value_array[4].strip().lower()
+                weight = float(value_array[5].strip().lower())
                 if key_name not in result_dict:
                     result_dict[key_name] = {}
                 for sub_type in type.strip().lower().split("|"):
@@ -70,7 +71,8 @@ class DccReferenceGenerator(object):
                     if len(sub_type) > 0:
                         result_dict[key_name][sub_type] = {"content": action,
                                                            "value": step_variable_list,
-                                                           "expected": expected}
+                                                           "expected": expected,
+                                                           "weight": weight}
         return result_dict
 
     def generate_reference_file(self, input_fp):
