@@ -198,6 +198,7 @@ var Result = React.createClass({
             <input type="range" min="30" max="120" step="30" defaultValue="60" 
                    onChange={function(evt){this.setState({totalTime: evt.target.value})}.bind(this)}/>
             <label>Estimated Time: {this.state.totalTime} min</label>
+            <p>{shownTestcases.length} / {this.state.testcases.length} cases selected</p>
           </div>
           <div className="col-xs-6">
             <a className="btn btn-success" download="mozapoy_test_suite.csv" href={this.generateCsvUrl(shownTestcases)} >Download as Excel CSV</a>
