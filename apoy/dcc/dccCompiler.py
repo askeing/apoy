@@ -104,6 +104,7 @@ class DccCompiler(object):
             os.mkdir(dir_name)
         with open(self.output_file_path, "wb") as write_fh:
             json.dump(self.compiled_data, write_fh)
+        self.compiled_data.clear()
 
     def run(self):
         self.import_reference_files()
