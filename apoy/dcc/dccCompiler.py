@@ -66,6 +66,7 @@ class DccCompiler(object):
                         case_content = self.refernce_data[TEMPLATE_CONTENT][step_key_name][case_type]['content']
                         expected_content = self.refernce_data[TEMPLATE_CONTENT][step_key_name][case_type]['expected']
                         step_variables = self.refernce_data[TEMPLATE_CONTENT][step_key_name][case_type]['value']
+                        step_weight = self.refernce_data[TEMPLATE_CONTENT][step_key_name][case_type]['weight']
                         for case_variable_value in case_variable_value_list:
                             if KEYWORD_CASE_VARIABLE in case_content:
                                 case_content = case_content.replace(KEYWORD_CASE_VARIABLE, case_variable_value, 1)
@@ -75,14 +76,27 @@ class DccCompiler(object):
                         for step_variable in step_variables:
                             if KEYWORD_STEP_VARIABLE in case_content:
                                 case_replaced_content = case_content.replace(KEYWORD_STEP_VARIABLE, step_variable, 1)
-                            step_list.append({'step': case_replaced_content, 'expected': expected_content})
+                            step_list.append({'step': case_replaced_content, 'expected': expected_content, "weight": step_weight})
                     case_step_list.append(step_list)
                 result_list.extend([t for t in itertools.product(*case_step_list)])
         return result_list
 
+    def caculate_priority(self, input_data):
+        return_result = []
+        for case_data in input_data:
+            step_cnt = len(case_data)
+            weight_summary = 0
+            case_result = {"priority": 0.0, "steps": []}
+            for step_data in case_data:
+                weight_summary += step_data['weight']
+            case_result['priority'] = weight_summary / step_cnt
+            case_result['steps'] = case_data
+            return_result.append(case_result)
+        return return_result
+
     def run_compile(self):
         feature_name = self.input_file_path.split(".")[0]
-        self.compiled_data[feature_name] = self.compile(self.input_file_path)
+        self.compiled_data[feature_name] = self.caculate_priority(self.compile(self.input_file_path))
 
     def output_compiled_data(self):
         dir_name = os.path.dirname(self.output_file_path)
