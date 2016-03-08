@@ -26,7 +26,8 @@ var Table = React.createClass({
     var testcasesElems = this.props.testcases.map(function(testcase, index){
       var body;
       //var text = "";
-      var text = testcase.map(function(step){
+      console.log(testcase)
+      var text = testcase.steps.map(function(step){
         var expected;
         if (step.expected) {
           expected = (<p> >>> {step.expected}</p>)
@@ -57,7 +58,7 @@ var Table = React.createClass({
           <td> <button className="btn btn-default" onClick={function(){this.props.removeItem(testcase.index)}.bind(this)}><span className="glyphicon glyphicon-ban-circle"></span></button></td>
           <td> {index/*testcase.id*/}       </td>
           {body}
-          <td> {/*testcase.priority*/} </td>
+          <td> {testcase.priority} </td>
         </tr>
       )
     }.bind(this));
@@ -84,7 +85,7 @@ var Result = React.createClass({
   getInitialState: function(){
     return {
       totalTime: 60,
-      testcases: [[{'step': 'loading...'}]]
+      testcases: [{'steps':[{'step': 'loading...'}]}]
     }
   },
   componentDidMount: function(){
@@ -148,12 +149,20 @@ var Result = React.createClass({
   },
 
   filterTestcaseByTotalTime: function(testcases, totalTime){
-    /*
-    var priority = totalTime / 30; //TODO: improve the algo
-    return testcases.filter(function(tc){return tc.priority <= priority});
-    */
     //FIXME: a workaround before we have priority in the generated result
-    return testcases
+    if (typeof(testcases[0].priority) == "undefined"){
+      return testcases
+    }
+    //XXX: get the max from range 
+    //FIXME: hardcoded 5
+    var level = 5 - totalTime / 30; //TODO: improve the algo
+    console.log(level)
+    var priorities = testcases.map(function(tc){return tc.priority});
+    console.log(priorities)
+    //XXX: 4 is hardcoded
+    var targetPriority = (Math.max.apply(null, priorities) - Math.min.apply(null, priorities)) / 4 * level + Math.min.apply(null, priorities);
+    console.log(targetPriority)
+    return testcases.filter(function(tc){return tc.priority >= targetPriority});
   },
 
   generateCsvUrl: function(testcases) {
