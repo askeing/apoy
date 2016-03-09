@@ -119,8 +119,11 @@ class FrameworkParser:
         return False
 
     @staticmethod
-    def react_handler(repo_path):
-        path = repo_path
+    def react_handler(repo_summary_or_path):
+        if isinstance(repo_summary_or_path, dict):
+            path = repo_summary_or_path['repo_path']
+        else:
+            path = repo_summary_or_path
         # if find framework from dependencies, return True
         if FrameworkParser.has_react_dependencies(path):
             return True
@@ -131,9 +134,11 @@ class FrameworkParser:
         return False
 
     @staticmethod
-    def angular_handler(repo_path):
-        path = repo_path
-
+    def angular_handler(repo_summary_or_path):
+        if isinstance(repo_summary_or_path, dict):
+            path = repo_summary_or_path['repo_path']
+        else:
+            path = repo_summary_or_path
         # if find framework from dependencies, return True
         if FrameworkParser.has_angular_dependencies(path):
             return True
