@@ -1,5 +1,7 @@
 # Apoy
 
+[![Build Status](https://travis-ci.org/askeing/apoy.svg?branch=master)](https://travis-ci.org/askeing/apoy)
+
 * Setup virtualenv
 ```bash
 $ virtualenv env
