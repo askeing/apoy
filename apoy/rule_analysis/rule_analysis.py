@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import os
 import shutil
+from framework import FrameworkParser
 
 
 def find(path, target):
@@ -33,6 +34,8 @@ def forgot_password_handler(repo_summary):
 # predefined rule handlers
 rule_handlers = {'login': login_handler,
                  'forgot_password': forgot_password_handler,
+                 'react': FrameworkParser.react_handler,
+                 'angular': FrameworkParser.angular_handler,
                  }
 
 def cleanup(input_path):
@@ -49,8 +52,10 @@ def run_analysis(repo_summary):
 
 
 def main():
-    return run_analysis({'full_name': 'zapion/MozITP'})
-
+    # please git clone Repo before running this testing...
+    repo_path = '/temp/angular-registration-login-example'
+    #repo_path = '/temp/todomvc/examples/react'
+    return run_analysis({'repo_path': repo_path})
 
 if __name__ == '__main__':
     print(main())
