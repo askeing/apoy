@@ -1,1 +1,1 @@
-["input <step_variable> in <case_variable>", "open <case_variable>", "close <case_variable>", "click <case_variable>", "create <case_variable>", "check <case_variable>", "input <case_variable> in <case_variable>"]
+["input <step_variable> in <case_variable>", "open <case_variable>", "close <case_variable>", "click <case_variable>", "create <case_variable>", "check <case_variable>", "input <case_variable> in <case_variable>", "input <step_variable> in <case_variable> and click <case_variable>"]

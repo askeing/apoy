@@ -4,6 +4,10 @@ import json
 import argparse
 from argparse import ArgumentDefaultsHelpFormatter
 
+"""
+Generate cases.json from caseCategory.csv
+"""
+
 class DccCaseLibGenerator(object):
 
     case_lib_content = {}
