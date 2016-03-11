@@ -75,12 +75,21 @@ class DccReferenceGenerator(object):
                                                            "weight": weight}
         return result_dict
 
+    def generate_sequence(self, input_fp):
+        result_list = []
+        with open(input_fp) as f:
+            for line in f.readlines():
+                result_list.append(filter(None, line.strip().lower().split(",")))
+        return result_list
+
     def generate_reference_file(self, input_fp):
         input_type = os.path.basename(input_fp).split(".")[0].strip().lower()
-        if input_type in [TEMPLATE_ACTION, TEMPLATE_EXPECTED, TEMPLATE_SEQUENCE]:
+        if input_type in [TEMPLATE_ACTION, TEMPLATE_EXPECTED]:
             self.dump_to_json(input_type, filter(None, self.load_csv_to_list(input_fp)))
         if input_type == TEMPLATE_CONTENT:
             self.dump_to_json(input_type, self.generate_content(input_fp))
+        if input_type == TEMPLATE_SEQUENCE:
+            self.dump_to_json(input_type, self.generate_sequence(input_fp))
 
     def run(self):
         if self.action_gen_bol is False and self.content_gen_bol is False and self.sequence_gen_bol is False and self.expected_gen_bol is False:
