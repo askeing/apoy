@@ -209,6 +209,43 @@ class TaskHandler(BaseHandler):
             }
         self.write(json.dumps(result))
 
+class InfoHandler(BaseHandler):
+    def get(self, taskid):
+        self.get_task_info(taskid)
+
+    def get_task_info(self, taskid):
+        logger = logging.getLogger('apoy.server')
+        # Using xhr will not have current user
+        try:
+            with open('results/{}_summary.json'.format(taskid), 'r') as f:
+                result = {
+                    'user': self.get_current_user(),
+                    'id': taskid,
+                    'status': 'done',
+                    'results': json.load(f)
+                }
+
+        except IOError:
+            logger.warning('results/{}_summary.json is not ready'.format(taskid))
+            logger.debug(os.system('ls results'))
+            result = {
+                'user': self.get_current_user(),
+                'id': taskid,
+                'status': 'in progress',
+                'results': []
+            }
+        except:
+            logger.error('Unexpected Error while loading results/{}_summary.json'.format(taskid))
+            import sys
+            logger.error(sys.exc_info()[0])
+            result = {
+                'user': self.get_current_user(),
+                'id': taskid,
+                'status': 'server error',
+                'results': []
+            }
+        self.write(json.dumps(result))
+
 class RepoInfoHandler(BaseHandler):
     def get(self):
         self.get_repo_info()
@@ -260,6 +297,7 @@ def make_app():
         (r'/test', TestHandler),
         (r'/rest/repoinfo', RepoInfoHandler),
         (r'/rest/task/([0-9]+)', TaskHandler),
+        (r'/rest/info/([0-9]+)', InfoHandler),
     ], **settings)
 
 

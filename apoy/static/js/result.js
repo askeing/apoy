@@ -81,6 +81,114 @@ var Table = React.createClass({
   }
 });
 
+var RepoInfo = React.createClass({
+  getInitialState: function(){
+    return {
+      info: [{'status':'in progress'}]
+    }
+  },
+  componentDidMount: function(){
+    this.load();
+  },
+  //XXX: this load function is a duplication to loadTestcases in Result
+  load: function(){
+    if (typeof(fetch) == undefined){
+      alert('We are using the latest Fetch API, you need to update your browser or wait for us to implement a backward compatiable version')
+    }
+
+    var a = new RegExp("taskid=([0-9]+)");
+    var taskid = decodeURIComponent(a.exec(window.location.search)[1]);
+    //TODO: check for invalid id
+
+    var timer = setInterval(function(){
+      fetch('/rest/info/' + taskid).then(function(resp){
+        console.log(this)
+        if (resp.status !== 200) {
+          console.log('failed, ' + resp.status)
+          return
+        }
+        resp.json().then(function(data){
+          console.log(this)
+          if (data.status == "done"){
+            clearInterval(timer);
+            
+            this.setState({info: data.results})
+          }
+          console.log("Still in progress")
+        }.bind(this))
+      }.bind(this))
+    }.bind(this), 3000);
+  },
+  createRow: function(attrName, readableName){
+    if (this.state.info.hasOwnProperty(attrName)){
+      return(
+          <tr>
+            <td> {readableName}</td>
+            <td> {this.state.info[attrName]}</td>
+          </tr>
+      )
+    }
+    else {
+      return undefined
+    }
+  },
+  render: function() {
+    var content = [];
+    var info = this.state.info;
+    content.push(this.createRow('name', 'Project Name'));
+    content.push(this.createRow('owner.login', 'Owner'));
+
+    if (info.hasOwnProperty('languages')){
+      content.push(
+          <tr>
+            <td> Programming Language </td>
+            <td> {Object.keys(info['languages']).join(', ')}</td>
+          </tr>
+      )
+    }
+    //TODO: refactor this loop for extensibility
+    var attributes = {
+      "Framework": {
+        "angular": "Angular",
+        "react": "ReactJS"
+      },
+      "Feature": {
+        "login": "Login system",
+        "forgot_password": "\"Forget Password\" system"
+      }
+    }
+
+    if (info.hasOwnProperty('enabled_attributes')){
+      for (var category in attributes) {
+        for (var key in attributes[category]){
+          if (info['enabled_attributes'][key]){
+            content.push(
+                <tr>
+                  <td> {category} </td>
+                  <td> {attributes[category][key]}</td>
+                </tr>
+            )
+          }
+        }
+      }
+    }
+
+    return (
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th> Attribute </th>
+            <th> Value     </th>
+          </tr>
+        </thead>
+        <tbody>
+          {content}
+        </tbody>
+      </table>
+    )
+  }
+});
+
 var Result = React.createClass({
   getInitialState: function(){
     return {
@@ -191,6 +299,11 @@ var Result = React.createClass({
       <div className="container">
         <div className="row">
           <h1>MozApoy Test Cases</h1>
+        </div>
+        <div className="row">
+          <div className="col-xs-12">
+            <RepoInfo />
+          </div>
         </div>
         <div className="row well">
           <div className="col-xs-6">
