@@ -130,7 +130,7 @@ class CallBackHandler(BaseHandler):
         taskid = int(time.time())
         gh = GithubInfo(self.get_secure_cookie('github_token'))
         try:
-            project_repo_summary = gh.get_repo_info_summary_with_snapshot(repo_fullname)
+            project_repo_summary = gh.get_repo_info_summary_with_snapshot(repo_fullname, taskid)
             TaskWorker(project_repo_summary, taskid).start()
         except UnknownObjectException as e:
             logger.error(e)
