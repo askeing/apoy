@@ -103,9 +103,9 @@ class GithubInfo:
                   }
         return result
 
-    def get_repo_info_summary_with_snapshot(self, full_name_or_id):
+    def get_repo_info_summary_with_snapshot(self, full_name_or_id, taskid=None):
         result = self.get_repo_info_summary(full_name_or_id)
-        repo_path = self.snapshot.dump_repo_snapshot(full_name_or_id)
+        repo_path = self.snapshot.dump_repo_snapshot(full_name_or_id, taskid)
         result['repo_path'] = repo_path
         return result
 
@@ -119,17 +119,28 @@ class GithubSnapshot:
             os.mkdir(self.snapshot_dir)
             logger.info('Create snapshot root folder: {}'.format(self.snapshot_dir))
 
-    def dump_repo_snapshot(self, full_name_or_id):
-        path = os.path.join(self.snapshot_dir, os.path.basename(full_name_or_id))
+    def dump_repo_snapshot(self, full_name_or_id, taskid=None):
+        if taskid:
+            root_dir = os.path.join(self.snapshot_dir, str(taskid))
+            if os.path.exists(root_dir) and os.path.isdir(root_dir):
+                logger.info('The task snapshot folder already exists. TaskID {}'.format(taskid))
+            else:
+                os.mkdir(root_dir)
+                logger.info('Create task snapshot folder: {}'.format(root_dir))
+        else:
+            root_dir = self.snapshot_dir
+        path = os.path.join(root_dir, os.path.basename(full_name_or_id))
         if os.path.exists(path):
             logger.error("Creating snapshot failed for {0}. Path already exists.".format(full_name_or_id))
             return None
         git_repo = "https://github.com/{0}.git".format(full_name_or_id)
-        os.system("cd {0}; git clone --depth=1 {1}".format(self.snapshot_dir, git_repo))
+        os.system("cd {0}; git clone --depth=1 {1}".format(root_dir, git_repo))
         logger.info('Create snapshot folder: {}'.format(path))
         return path
 
-    def cleanup_repo_snapshot(self, full_name_or_id):
+    def cleanup_repo_snapshot(self, full_name_or_id, taskid=None):
         path = os.path.join(self.snapshot_dir, os.path.basename(full_name_or_id))
+        if taskid:
+            path = os.path.join(self.snapshot_dir, str(taskid))
         shutil.rmtree(path, ignore_errors=True)
         logger.info('Remove snapshot folder: {}'.format(path))
