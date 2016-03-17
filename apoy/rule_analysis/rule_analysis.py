@@ -65,6 +65,7 @@ def register_handler(repo_summary):
 # predefined rule handlers
 rule_handlers = {'login': login_handler,
                  'forgot_password': forgot_password_handler,
+                 'todo': todo_handler,
                  'react': FrameworkParser.react_handler,
                  'angular': FrameworkParser.angular_handler,
                  }
